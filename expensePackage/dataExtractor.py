@@ -9,6 +9,6 @@ def findfile(file):
     except Exception as e:
         print(f"Error reading the XML file: {e}")
 
-xml_path = "/mnt/c/Users/Moses/Documents/projects/rubbish/sms-20231217000653.xml"
+xml_path = "/mnt/g/My Drive/backup/sms-20231217000653.xml"
 findfile(xml_path)
 

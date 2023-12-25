@@ -1,15 +1,88 @@
 from lxml import etree
 import re
+from datetime import datetime
+import pandas as pd
 
+dateFormat = "%d/%m/%y"
 expenses=[]
 
 class Expense:
-    def __init__(self, transactionType, amount, transactionCost, total, date):
-        self.transactionType= transactionType
+    def __init__(self, transactionType, amount, transactionCost, date):
+        self.transactionType =transactionType
         self.amount= amount
         self.transactionCost =transactionCost
-        self.total=total
+        self.date = date
 
+def removeCurrency(value):
+    val0=value.replace(',','')
+    match = re.search(r"\d+", val0)
+    if match:
+        return float(match.group())
+    else:
+        pass
+    
+def extractAmount(text):
+    priorWord= None
+    try:
+        if 'airtime' in text:
+            priorWord = 'bought'
+        elif 'sent' in text:
+            priorWord = 'Confirmed.'
+        elif 'paid' in text:
+            priorWord ='Confirmed.'
+        elif 'pay' in text:
+            priorWord ='Ksh'
+        elif 'received' in text and 'Airtime' not in text:
+            priorWord ='received'
+        else:
+            pass
+        words= text.split()
+        index = words.index(priorWord)
+        extractedData = words[index+1]
+        amount = removeCurrency(extractedData)
+        return amount
+    except (ValueError, IndentationError):
+        return None
+    
+def checkTypeOfTransaction(text):
+    if 'airtime' in text:
+        transactionType='Airtime'       
+    elif 'sent' in text:
+        transactionType='Send Money'
+    elif 'paid' in text:
+        transactionType='Buy Goods'
+    elif 'pay' in text:
+        transactionType='Fuliza Payment'
+    elif 'received' in text and 'Airtime' not in text:
+        transactionType='Receive'
+    else:
+        return None
+    return transactionType
+    
+def extractTransactionCost(text):
+    try:
+        priorWord='cost,'
+        words =text.split()
+        index= words.index(priorWord)
+        transCost = words[index+1]
+        value = removeCurrency(transCost)
+        return value
+    except (ValueError,IndexError):
+        return None
+
+def extractDate(text):
+    try:
+        words=text.split()
+        priorWord='on'
+        index =words.index(priorWord)
+        dateString = words[index+1]
+        dates = datetime.strptime(dateString, dateFormat)
+        dates = dates.replace(minute=0, second=0)
+        date =dates.strftime("%d/%m/%Y")
+        return date
+    except(ValueError, IndexError):
+        return None
+    
 def findfile(file):
     try:
         doc = etree.parse(file)
@@ -18,84 +91,18 @@ def findfile(file):
             address = element.get("address")
             if address == "MPESA":
                 body = element.get("body")
-                transaction = checkTypeOfTransaction(body)
-                if transaction:
-                    expenses.append(transaction)
+                transactionType=checkTypeOfTransaction(body)
+                amount= extractAmount(body)
+                transactionCost= extractTransactionCost(body)
+                date = extractDate(body)
+                if amount is not None and transactionType is not None:
+                    expense =Expense(transactionType,amount, transactionCost, date)
+                    expenses.append(expense)
+        if expenses:
+            df = pd.DataFrame([exp.__dict__ for exp in expenses])
+            return df
+        else:
+            print("No valid transactions found")
+
     except Exception as e:
         print(f"Error reading the XML file: {e}")
-
-xml_path = "/mnt/g/My Drive/backup/sms-20231217000653.xml"
-findfile(xml_path)
-
-
-def extractAmount(text,priorWord):
-    try:
-        words= text.split()
-        index =words.index(priorWord)
-        value = words[index+1]
-        amount = removeCurrency(value)
-        return amount
-    except(ValueError, IndexError):
-        return None
-def extractTransactionCost(text):
-    try:
-        priorWord='cost'
-        words =text.split()
-        index= words.index(priorWord)
-        value = words[index+1]
-        TransactionCost = removeCurrency(value)
-        return TransactionCost
-    except (ValueError,IndexError):
-        return None
-    
-def processTransactionCost(text, transactionType,priorWord):
-    amount, transactionCost, totalAmount, date = extractTransactionInfo(text,priorWord)
-    expense =Expense(transactionType, amount, transactionCost, totalAmount, date)
-
-def checkTypeOfTransaction(text):
-    if 'airtime' in text:
-        priorWord = 'bought'
-        transactionType='airtime'       
-    elif 'sent' in text:
-        priorWord = 'Confirmed.'
-        transactionType='Send Money'
-       
-    elif 'paid' in text:
-        priorWord ='Confirmed.'
-        transactionType='Buy Goods'
-    elif 'pay' in text:
-        priorWord ='Confirmed.'
-        transactionType='Fuliza Payment'
-    elif 'received' in text:
-        priorWord ='Confirmed.'
-        transactionType='Receive'
-    else:
-        return None
-    return processTransactionCost(text, transactionType, priorWord)
-
-def extractTransactionInfo(text, priorWord):
-    amount= extractAmount(text,priorWord)
-    transactionCost =extractTransactionCost(text)
-    totalAmount = amount + transactionCost
-    date =extractDate(text)
-    return amount, transactionCost, totalAmount, date
-
-
-
-def removeCurrency(value):
-    match = re.search(r"\d+", value)
-    if match:
-        return int(match.group())
-    else:
-        return None
-    
-def extractDate(text):
-    try:
-        words=text.split()
-        priorWord='on'
-        index =words.index(priorWord)
-        date = words[index+1]
-    except(ValueError, IndexError):
-        return None
-
-        

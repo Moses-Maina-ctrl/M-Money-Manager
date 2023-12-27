@@ -22,12 +22,22 @@ def main():
             endDate = st.date_input("To: ", datetime.date(currentYear, currentMonth, currentDay))
         df=findfile(xml_path)
         df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+        df[['amount', 'transactionCost']] = df[['amount','transactionCost']].fillna(0)
         beginningDate = pd.to_datetime(beginningDate)
         endDate = pd.to_datetime(endDate)
+        df['Total'] = df['amount'] +df['transactionCost']
         monthlyTransactions = df[(df['date'] >= beginningDate) & (df['date'] <= endDate)]
-        # TODO change beginningDate and EndDate to datetime object
         st.write(monthlyTransactions)
-        df['tr']
+       #Airtime = df.loc[df['transactionType'=='Airtime',]]
+        total_by_transaction_type = monthlyTransactions.groupby('transactionType')['Total'].sum().reset_index()
+
+        st.write(total_by_transaction_type)
+        st.subheader('Transaction Chart')
+        st.bar_chart(total_by_transaction_type.set_index('transactionType')['Total'])
+
+st.set_page_config(
+    page_title= "Mpesa Messages",
+)
 if __name__ == "__main__":
     main()
         

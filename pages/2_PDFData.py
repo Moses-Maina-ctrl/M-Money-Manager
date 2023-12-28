@@ -6,7 +6,9 @@ def main():
     st.title('PesaPulse')
     pdf_path = st.file_uploader("Upload your financial statement", type=['pdf'])
     if pdf_path is not None:
-        readPDF(pdf_path)
+        df = readPDF(pdf_path)
+        st.write(df)
+
 
 if __name__ == "__main__":
     main()

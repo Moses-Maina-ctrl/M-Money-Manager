@@ -27,11 +27,11 @@ def main():
         endDate = pd.to_datetime(endDate)
         df['Total'] = df['amount'] +df['transactionCost']
         monthlyTransactions = df[(df['date'] >= beginningDate) & (df['date'] <= endDate)]
-        st.write(monthlyTransactions)
+        st.write(monthlyTransactions, index=False)
        #Airtime = df.loc[df['transactionType'=='Airtime',]]
         total_by_transaction_type = monthlyTransactions.groupby('transactionType')['Total'].sum().reset_index()
 
-        st.write(total_by_transaction_type)
+        st.write(total_by_transaction_type, index=False)
         st.subheader('Transaction Chart')
         st.bar_chart(total_by_transaction_type.set_index('transactionType')['Total'])
 

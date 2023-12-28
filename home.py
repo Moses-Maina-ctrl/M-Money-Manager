@@ -14,6 +14,7 @@ def main():
 
         - **Use Mpesa Messages💬**: Analyze transactions from your text messages.
         - **Use Mpesa Financial Statements🧾**: Analyze transactions from your financial statements.
+        - ***Manually add your Expenses and Income
 
         Start managing your finances effortlessly with PesaPulse! 💰
         """

@@ -13,7 +13,7 @@ def main():
     st.sidebar.header("➕ Add Expense")
     date = st.sidebar.date_input("📅 Date", datetime.now())
     category = st.sidebar.text_input("🏷️ Category")
-    amount = st.sidebar.number_input("💲 Amount", min_value=0.01, step=0.01)
+    amount = st.sidebar.number_input("💲 Amount", min_value=0, step=0)
 
     if st.sidebar.button("➕ Add Expense"):
         add_expense(date, category, amount)

@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from expensePackage.xmlDataExtractor import findfile
 import datetime
-
+import altair as alt
 
 def main():
     st.title('PesaPulse')
@@ -21,19 +21,23 @@ def main():
         with col2:
             endDate = st.date_input("To: ", datetime.date(currentYear, currentMonth, currentDay))
         df=findfile(xml_path)
+        print(df)
         df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
         df[['amount', 'transactionCost']] = df[['amount','transactionCost']].fillna(0)
         beginningDate = pd.to_datetime(beginningDate)
         endDate = pd.to_datetime(endDate)
         df['Total'] = df['amount'] +df['transactionCost']
         monthlyTransactions = df[(df['date'] >= beginningDate) & (df['date'] <= endDate)]
-        st.write(monthlyTransactions, index=False)
-       #Airtime = df.loc[df['transactionType'=='Airtime',]]
-        total_by_transaction_type = monthlyTransactions.groupby('transactionType')['Total'].sum().reset_index()
+        if not monthlyTransactions.empty:
 
-        st.write(total_by_transaction_type, index=False)
-        st.subheader('Transaction Chart')
-        st.bar_chart(total_by_transaction_type.set_index('transactionType')['Total'])
+            st.write(monthlyTransactions)
+        #Airtime = df.loc[df['transactionType'=='Airtime',]]
+            total_by_transaction_type = monthlyTransactions.groupby('transactionType')['Total'].sum().reset_index()
+            st.write(total_by_transaction_type)
+            st.subheader('Transaction Chart')
+            st.bar_chart(total_by_transaction_type.set_index('transactionType')['Total'])
+        else:
+            st.warning("No M-Pesa messages found for the selected dates!😢")
 
 st.set_page_config(
     page_title= "Mpesa Messages",

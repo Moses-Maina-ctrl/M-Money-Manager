@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from expensePackage.xmlDataExtractor import findfile
 import datetime
-import altair as alt
+import plotly.express as px
 
 def main():
     st.title('PesaPulse')
@@ -31,11 +31,19 @@ def main():
         if not monthlyTransactions.empty:
 
             st.write(monthlyTransactions)
+            
         #Airtime = df.loc[df['transactionType'=='Airtime',]]
             total_by_transaction_type = monthlyTransactions.groupby('transactionType')['Total'].sum().reset_index()
             st.write(total_by_transaction_type)
+
+            pieChart= px.pie(total_by_transaction_type, values='Total', names='transactionType', title='Transaction Pie Chart')
+            
+            st.plotly_chart(pieChart, use_container_width=True)
+            
+
             st.subheader('Transaction Chart')
             st.bar_chart(total_by_transaction_type.set_index('transactionType')['Total'])
+            
         else:
             st.warning("No M-Pesa messages found for the selected dates!😢")
 

@@ -7,7 +7,7 @@ def main():
     st.markdown(
         """
         ### Instructions:
-        -To review your transactions and expenses from your Mpesa Statements, just upload you financial statement from [Safaricom](https://www.safaricom.co.ke/personal/m-pesa/do-more-with-m-pesa/m-pesa-statement)
+        -To review your transactions and expenses from your Mpesa Statements, just upload your financial statement from [Safaricom](https://www.safaricom.co.ke/personal/m-pesa/do-more-with-m-pesa/m-pesa-statement)
 
         -Once uploaded, the tool automatically extracts and displays your transactions
         

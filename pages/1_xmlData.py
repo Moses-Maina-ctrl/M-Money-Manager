@@ -7,6 +7,18 @@ import plotly.express as px
 
 def main():
     st.title('PesaPulse')
+    st.markdown(
+        """
+        This tool  uses the SMS Backup & Restore app available on [Google Play](https://play.google.com/store/apps/details?id=com.riteshsahu.SMSBackupRestore&hl=en_US).
+        ### Instructions:
+        -To review your transactions and expenses from your Mpesa Messages, just upload the message backup using the SMS Backup & Restore App
+
+        -Once uploaded, the tool automatically extracts and displays your transactions
+
+        -Download the transaction data for convenient use in your preferred spreadsheet application.
+        
+        """
+    )
     xml_path = st.file_uploader("Upload XML file", type=['xml'])
 
     if xml_path is not None:
@@ -21,7 +33,6 @@ def main():
         with col2:
             endDate = st.date_input("To: ", datetime.date(currentYear, currentMonth, currentDay))
         df=findfile(xml_path)
-        print(df)
         df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
         df[['amount', 'transactionCost']] = df[['amount','transactionCost']].fillna(0)
         beginningDate = pd.to_datetime(beginningDate)

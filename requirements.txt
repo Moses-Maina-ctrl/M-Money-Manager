@@ -1,5 +1,4 @@
 lxml==4.9.4
-lxml==4.8.0
 numpy==1.26.3
 pandas==2.1.4
 plotly==5.18.0

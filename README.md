@@ -1,6 +1,6 @@
 # [Pesa Pulse M-Money Manager](https://shielded-thicket-54897-a152e61eec3b.herokuapp.com/)
 
-##Overview
+## Overview
 This is a simple application to help users manage their financial transactions mainly Mobile Money.
 The app allows users to add, view, and analyze both expenses and incomes. Additionally, it supports parsing XML files to retrieve text messages and extracting financial data from financial statements.
 Try it: [Pesa Pulse](https://shielded-thicket-54897-a152e61eec3b.herokuapp.com/)
